@@ -1,53 +1,939 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>triagos</title>
-  <meta name="robots" content="noindex">
-  <style>
-    :root {
-      --bg: #0d1117;
-      --ink: #e6e9ee;
-      --muted: #8b95a3;
-      --accent: #e03131;
-      --blue: #2f5fd0;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      min-height: 100svh;
-      display: grid;
-      place-items: center;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    }
-    main { text-align: center; padding: 2rem; }
-    h1 {
-      font-size: clamp(2.2rem, 8vw, 4rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    h1 .dot { color: var(--accent); }
-    p {
-      margin-top: 1rem;
-      color: var(--muted);
-      font-size: 1.05rem;
-    }
-    .bar {
-      margin: 1.6rem auto 0;
-      width: 64px;
-      height: 3px;
-      border-radius: 2px;
-      background: linear-gradient(90deg, var(--blue), var(--accent));
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>триагос — внедрение ИИ в бизнес-процессы</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="триагос — внедряем ИИ в бизнес-процессы: рутину берут агенты, решения остаются за людьми.">
+<link rel="icon" type="image/svg+xml" href="triagos-favicon.svg">
+<!-- TODO перед публичным запуском: снять noindex, добавить OG/Twitter cards (og:title/description/image) + canonical, подключить бэкенд формы -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --machine:#1E2A30; --ink:#141E23; --m2:#28363E; --m3:#324249;
+    --accent:#4FA0A0; --accent-d:#3E8C8C;
+    --human:#BC6247; --human-d:#2A1409; --human-soft:#E6B4A2;
+    --light:#E6F3F0; --light-2:#D2E8E3;
+    --text-d:#E4EDEC; --muted-d:#93A8A8;
+    --text-l:#152028; --muted-l:#4E6266;
+    --maxw:1160px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Inter",system-ui,sans-serif; background:var(--machine); color:var(--text-d); font-size:17px; line-height:1.6; -webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,.dsp{font-family:"Space Grotesk",sans-serif; letter-spacing:-.02em; line-height:1.08; margin:0}
+  .mono{font-family:"JetBrains Mono",monospace}
+  a{color:inherit; text-decoration:none}
+  .container{max-width:var(--maxw); margin:0 auto; padding:0 24px}
+  section{padding:92px 0}
+  .eyebrow{font-family:"JetBrains Mono",monospace; font-size:12px; letter-spacing:.16em; text-transform:uppercase}
+  .btn{display:inline-flex; align-items:center; gap:9px; font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:15.5px; padding:13px 24px; border-radius:10px; cursor:pointer; border:1.5px solid transparent; transition:.18s}
+  svg.ic{width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round}
+  .proto{background:#000; color:#fff; text-align:center; font-family:"JetBrains Mono",monospace; font-size:11.5px; letter-spacing:.12em; padding:7px; text-transform:uppercase}
+
+  /* sections tone */
+  .dark{background:var(--machine); color:var(--text-d)}
+  .darker{background:var(--ink); color:var(--text-d)}
+  .lightsec{background:var(--light); color:var(--text-l)}
+  .ambersec{background:var(--light); color:var(--text-l)}
+
+  /* header */
+  header.nav{position:sticky; top:0; z-index:50; background:rgba(20,32,37,.86); backdrop-filter:blur(10px); border-bottom:1px solid rgba(79,160,160,.14)}
+  .nav-in{display:flex; align-items:center; justify-content:space-between; height:66px}
+  .logo{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:21px; letter-spacing:-.02em; color:#fff; display:flex; align-items:center; gap:9px}
+  .logo .mark{width:22px; height:26px; flex:none; display:block}
+  .nav-links{display:flex; gap:20px; align-items:center}
+  .nav-links a{color:var(--muted-d); font-size:15px; transition:.15s}
+  .nav-links a:hover{color:#fff}
+  .nav-right{display:flex; align-items:center; gap:12px}
+  .burger{display:none; flex-direction:column; justify-content:center; align-items:center; gap:5px; width:42px; height:42px; padding:0; background:none; border:0; cursor:pointer}
+  .burger span{display:block; width:24px; height:2px; background:#fff; border-radius:2px; transition:transform .28s ease, opacity .2s ease}
+  header.open .burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  header.open .burger span:nth-child(2){opacity:0}
+  header.open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .nav-cta{background:var(--human); color:#fff; padding:9px 16px; border-radius:9px; font-family:"Space Grotesk"; font-weight:600; font-size:14.5px}
+
+  /* hero — сплит «человек × машина» */
+  .hero{position:relative; overflow:hidden; display:grid; grid-template-columns:1.12fr .88fr; min-height:82vh}
+  .hero .h-machine{background:var(--ink); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:76px clamp(28px,5vw,72px) 76px clamp(24px,8vw,150px)}
+  .hero .h-human{background:var(--light); color:var(--text-l); position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px; padding:60px clamp(24px,6vw,80px); overflow:hidden}
+  .hero .seam-v{position:absolute; top:0; bottom:0; left:56%; width:2px; margin-left:-1px; background:linear-gradient(180deg,var(--accent),var(--human)); z-index:5}
+  .hero .eyebrow{color:var(--accent)}
+  .hero h1{font-size:clamp(34px,5vw,58px); font-weight:700; margin:20px 0 0; max-width:16ch}
+  .hero h1 .ai{color:var(--accent)}
+  .hero h1 .hu{color:var(--human)}
+  .hero p.sub{font-size:19px; color:var(--muted-d); max-width:46ch; margin:24px 0 0}
+  .hero .cta{display:flex; gap:13px; margin-top:32px; flex-wrap:wrap}
+  .btn-amber{background:var(--human); color:#fff}
+  .btn-amber:hover{background:#c97155}
+  .btn-ghost{border-color:rgba(79,160,160,.4); color:#fff}
+  .btn-ghost:hover{border-color:var(--accent); color:var(--accent)}
+  .diff{margin-top:26px; font-family:"JetBrains Mono",monospace; font-size:13px; color:var(--muted-d)}
+  .diff b{color:var(--human-soft); font-weight:400}
+
+  /* hero signature — «как сейчас» (люди) × «с ИИ» (агенты): цикл день/ночь + гейт согласования + счёт */
+  .duo{position:relative; width:min(460px,100%); aspect-ratio:500/210; transition:filter .5s ease}
+  .duo svg{width:100%; height:100%; overflow:visible}
+  .duo .base{fill:none; stroke:var(--human); stroke-opacity:.6; stroke-width:2.4; stroke-linecap:round; transition:stroke-opacity .5s ease}
+  .duo .wave{fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round; stroke-linejoin:round}
+  .duo .n-h{fill:var(--human); stroke:var(--light); stroke-width:2.5; transition:opacity .5s ease}
+  .duo .n-a{fill:var(--accent); stroke:var(--light); stroke-width:2}
+  .duo .task{transition:fill .3s ease}
+  .duo .task.gone{opacity:0; transform:scale(.25); transition:opacity .4s ease, transform .4s ease}
+  /* ночь: люди спят — линия и узлы-люди притухают */
+  .duo.night .base{stroke-opacity:.16}
+  .duo.night .n-h{opacity:.3}
+  /* фаза день/ночь */
+  .duo .phase{position:absolute; top:1%; left:0; font-family:"JetBrains Mono",monospace; font-size:11px; padding:5px 11px; border-radius:9px; background:rgba(20,30,35,.07); color:#33474C; white-space:nowrap; transition:background .5s ease, color .5s ease}
+  .duo .phase.night{background:var(--ink); color:#d6e8e5}
+  /* счёт «две реальности» */
+  .duo .score{position:absolute; right:-2%; font-family:"JetBrains Mono",monospace; font-size:11.5px; white-space:nowrap; padding:5px 11px; border-radius:9px; display:flex; align-items:center; gap:7px}
+  .duo .score b{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:19px; display:inline-block; transition:transform .16s ease}
+  .duo .score.pop b{transform:scale(1.4)}
+  .duo .score.ai{top:11%; background:rgba(79,160,160,.16); color:#2E6E6E}
+  .duo .score.ai b{color:var(--accent-d)}
+  .duo .score.man{bottom:2%; background:rgba(188,98,71,.13); color:#8a3f2c}
+  .duo .score.man b{color:var(--human)}
+  .duo .score.man i{font-style:normal; color:#c0553a}
+  /* реактивные метки событий */
+  .duo .flash{position:absolute; white-space:nowrap; font-family:"JetBrains Mono",monospace; font-size:10.5px; padding:3px 8px; border-radius:6px; pointer-events:none; z-index:6}
+  .duo .flash.done{background:var(--accent); color:#0a201d; animation:fl-up 1.1s ease forwards}
+  .duo .flash.lost{background:var(--human); color:#fff; animation:fl-down 1.3s ease forwards}
+  @keyframes fl-up{0%{opacity:0; transform:translate(-50%,-110%) scale(.9)}15%{opacity:1; transform:translate(-50%,-165%) scale(1)}70%{opacity:1}100%{opacity:0; transform:translate(-50%,-215%)}}
+  @keyframes fl-down{0%{opacity:0; transform:translate(-50%,-10%) scale(.9)}16%{opacity:1; transform:translate(-50%,55%) scale(1)}70%{opacity:1}100%{opacity:0; transform:translate(-50%,120%)}}
+  .hero .h-human .cap{font-family:"Space Grotesk",sans-serif; font-weight:500; font-size:13.5px; letter-spacing:.02em; color:var(--text-l); opacity:.72; text-align:center; max-width:44ch}
+
+  /* section heads */
+  .head{max-width:66ch; margin-bottom:46px}
+  .head .eyebrow{color:var(--accent)}
+  .lightsec .head .eyebrow, .ambersec .head .eyebrow{color:var(--accent-d)}
+  .head h2{font-size:clamp(27px,3.6vw,42px); font-weight:700; margin-top:14px}
+  .head p{font-size:18px; margin-top:14px}
+  .dark .head p, .darker .head p{color:var(--muted-d)}
+  .lightsec .head p{color:var(--muted-l)}
+
+  /* problem cards */
+  .cards3{display:grid; grid-template-columns:repeat(3,1fr); gap:20px}
+  .pcard{background:#fff; border:1px solid rgba(21,32,40,.08); border-radius:15px; padding:28px}
+  .pcard .ico{width:46px; height:46px; border-radius:12px; background:var(--light-2); color:var(--accent-d); display:grid; place-items:center; margin-bottom:16px}
+  .pcard h3{font-size:19px; font-weight:600; margin-bottom:8px}
+  .pcard p{color:var(--muted-l); font-size:15.5px}
+
+  /* pipeline */
+  .flow{display:flex; align-items:stretch; gap:12px; overflow-x:auto; padding-bottom:8px}
+  .fstep{flex:1 0 150px; border-radius:14px; padding:20px 18px; border:1px solid rgba(79,160,160,.22); background:var(--m2)}
+  .fstep .k{font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
+  .fstep h4{font-size:16px; font-weight:600; margin:9px 0 5px}
+  .fstep p{font-size:13px; color:var(--muted-d)}
+  .fgate{flex:0 0 150px; border-radius:14px; padding:20px 18px; background:var(--human); color:#fff; border:1px solid var(--human)}
+  .fgate .k{font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.82); opacity:.9}
+  .fgate h4{font-size:16px; font-weight:700; margin:9px 0 5px; display:flex; align-items:center; gap:7px}
+  .fgate p{font-size:13px}
+  .flow-note{margin-top:22px; font-size:15px; color:var(--muted-d)}
+  .flow-note b{color:var(--human-soft); font-weight:500}
+
+  /* agents grid — «боль → решение» со стык-линией (сигнатурный приём) */
+  .agrid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+  .scard{background:#fff; border:1px solid rgba(21,32,40,.09); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; transition:transform .18s, box-shadow .18s}
+  .scard:hover{transform:translateY(-3px); box-shadow:0 26px 54px -30px rgba(18,28,32,.55)}
+  .scard .pain{padding:24px 22px 20px; background:linear-gradient(180deg,#DCEFEC,#fff)}
+  .scard .pain .ico{width:44px; height:44px; border-radius:11px; background:rgba(79,160,160,.15); color:var(--accent-d); display:grid; place-items:center; margin-bottom:14px}
+  .scard .pain .ico svg{width:24px; height:24px}
+  .scard .lab{display:inline-flex; align-items:center; gap:7px; font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:11px}
+  .scard .lab i{width:7px; height:7px; border-radius:50%}
+  .scard .pain .lab{color:var(--human)}
+  .scard .pain .lab i{background:var(--human)}
+  .scard .pain h3{font-size:16.5px; font-weight:600; line-height:1.34; color:var(--text-l)}
+  .scard .seam{height:3px; background:linear-gradient(90deg,var(--human),var(--accent))}
+  .scard .sol{padding:22px 22px 20px; background:var(--machine); color:var(--text-d); flex:1; display:flex; flex-direction:column}
+  .scard .sol .lab{color:var(--accent)}
+  .scard .sol .lab i{background:var(--accent)}
+  .scard .sol p{font-size:14.5px; color:var(--muted-d); line-height:1.52}
+  .scard .gate{margin-top:16px; padding-top:14px; border-top:1px solid rgba(79,160,160,.16); font-size:13px; color:var(--human-soft); display:flex; gap:9px; align-items:flex-start}
+  .scard .gate svg{width:16px; height:16px; flex-shrink:0; margin-top:1px; stroke:var(--human)}
+  .scard .gate .g-t{color:var(--human); display:block; font-family:"JetBrains Mono",monospace; font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:2px}
+  /* тематические разделы сценариев */
+  .agroup{margin-top:40px}
+  .agroup:first-of-type{margin-top:0}
+  .agroup .glabel{display:flex; align-items:center; gap:14px; margin-bottom:18px}
+  .agroup .glabel .gt{font-family:"JetBrains Mono",monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted-l); white-space:nowrap}
+  .agroup .glabel .gline{flex:1; height:1px; background:linear-gradient(90deg,rgba(21,32,40,.18),transparent)}
+
+  /* цифровые сотрудники — карточки-роли */
+  .egrid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+  .ecard{background:var(--m2); border:1px solid rgba(79,160,160,.2); border-radius:16px; padding:26px 24px; display:flex; flex-direction:column; transition:transform .18s, border-color .18s}
+  .ecard:hover{transform:translateY(-3px); border-color:rgba(79,160,160,.5)}
+  .ecard .eava{width:54px; height:54px; border-radius:13px; background:linear-gradient(135deg,var(--accent),var(--human)); color:#fff; display:grid; place-items:center; margin-bottom:16px; box-shadow:0 12px 26px -12px rgba(62,140,140,.6)}
+  .ecard .eava svg{width:26px; height:26px; stroke:#fff}
+  .ecard .erole{font-family:"Space Grotesk",sans-serif; font-size:19px; font-weight:600; color:#fff}
+  .ecard .etask{font-size:14.5px; color:var(--muted-d); margin:8px 0 15px; line-height:1.5}
+  .ecard .elist{list-style:none; margin:0 0 16px; padding:0; display:flex; flex-direction:column; gap:8px}
+  .ecard .elist li{position:relative; padding-left:19px; font-size:13.5px; color:var(--text-d); line-height:1.4}
+  .ecard .elist li::before{content:""; position:absolute; left:1px; top:6px; width:6px; height:6px; border-radius:50%; background:var(--accent)}
+  .ecard .egate{margin-top:auto; padding-top:14px; border-top:1px solid rgba(79,160,160,.16); font-size:12.5px; color:var(--human-soft); display:flex; gap:8px; align-items:flex-start; line-height:1.4}
+  .ecard .egate svg{width:15px; height:15px; flex-shrink:0; margin-top:1px; stroke:var(--human)}
+  .ecard .egate .g-t{color:var(--human); display:block; font-family:"JetBrains Mono",monospace; font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:2px}
+
+  /* human-in-loop amber */
+  .hil h2{font-size:clamp(28px,4vw,44px); font-weight:700; max-width:20ch}
+  .hil .big{font-size:clamp(24px,3vw,34px); font-weight:600; margin:0 0 34px; max-width:24ch}
+  .hilgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:8px}
+  .hilcard{background:#fff; border:1px solid rgba(21,32,40,.09); border-radius:14px; padding:24px}
+  .hilcard .ico{width:42px;height:42px;border-radius:11px;background:rgba(188,98,71,.12);color:var(--human);display:grid;place-items:center;margin-bottom:14px}
+  .hilcard h3{font-size:18px; font-weight:600; margin-bottom:7px; color:var(--text-l)}
+  .hilcard p{font-size:14.5px; color:var(--muted-l)}
+
+  /* privacy dark */
+  .privgrid{display:grid; grid-template-columns:1.1fr 1fr; gap:44px; align-items:center}
+  .priv-badges{display:flex; flex-direction:column; gap:14px}
+  .pbadge{display:flex; gap:14px; align-items:flex-start; background:var(--m2); border:1px solid rgba(79,160,160,.18); border-radius:13px; padding:18px}
+  .pbadge .ico{width:40px;height:40px;border-radius:10px;background:rgba(79,160,160,.14);color:var(--accent);display:grid;place-items:center;flex-shrink:0}
+  .pbadge h4{font-size:16px; font-weight:600; margin-bottom:4px}
+  .pbadge p{font-size:14px; color:var(--muted-d)}
+
+  /* steps — карточки-шаги (приём ServerPro «Шаг N»: иконка + метка + заголовок + буллеты) */
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:18px}
+  .step{background:#fff; border:1px solid rgba(21,32,40,.09); border-radius:16px; padding:24px 22px; display:flex; flex-direction:column; transition:transform .18s, box-shadow .18s}
+  .step:hover{transform:translateY(-3px); box-shadow:0 22px 46px -28px rgba(18,28,32,.5)}
+  .step .top{display:flex; align-items:center; gap:12px; margin-bottom:16px}
+  .step .sico{width:42px; height:42px; border-radius:11px; background:var(--machine); color:#fff; display:grid; place-items:center; flex-shrink:0}
+  .step .sico svg{width:22px; height:22px}
+  .step .sk{font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-d)}
+  .step h3{font-size:18px; font-weight:600; color:var(--text-l); line-height:1.15}
+  .step .sbody{font-size:14px; color:var(--muted-l); margin:8px 0 0; line-height:1.45}
+  .step .slist{list-style:none; margin:16px 0 0; padding:16px 0 0; border-top:1px solid rgba(21,32,40,.09); display:flex; flex-direction:column; gap:8px}
+  .step .slist li{position:relative; padding-left:18px; font-size:13px; color:var(--text-l); line-height:1.4}
+  .step .slist li::before{content:""; position:absolute; left:1px; top:6px; width:6px; height:6px; border-radius:50%; background:var(--accent)}
+
+  /* cases */
+  .ccards{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+  .ccard{background:var(--m2); border:1px solid rgba(79,160,160,.18); border-radius:15px; padding:26px}
+  .ccard .metric{font-family:"Space Grotesk"; font-weight:700; font-size:34px; color:var(--human)}
+  .ccard h3{font-size:16px; font-weight:600; margin:6px 0 8px}
+  .ccard p{font-size:14px; color:var(--muted-d)}
+  .cases-disc{margin-top:20px; font-size:12.5px; color:var(--muted-d); font-family:"JetBrains Mono",monospace}
+
+  /* founder */
+  .founder{display:grid; grid-template-columns:.8fr 1.2fr; gap:44px; align-items:center}
+  .fphoto{aspect-ratio:4/5; border-radius:20px; background:var(--machine); overflow:hidden; max-width:340px; box-shadow:0 18px 40px -20px rgba(20,32,37,.45)}
+  .fphoto img{width:100%; height:100%; object-fit:cover; object-position:50% 20%; display:block}
+  .founder .quote{font-family:"Space Grotesk"; font-weight:500; font-size:clamp(19px,2.2vw,25px); line-height:1.35; color:var(--text-l)}
+  .founder .sign{margin-top:18px; font-weight:600; color:var(--text-l)}
+  .founder .sign span{display:block; font-weight:400; font-size:14px; color:var(--muted-l); margin-top:2px}
+  .fchips{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px}
+  .fchip{font-size:13px; font-weight:500; background:var(--light-2); border:1px solid rgba(21,32,40,.08); border-radius:999px; padding:8px 14px; color:var(--text-l)}
+  .fchip b{color:var(--accent-d)}
+
+  /* final cta */
+  .final{position:relative; overflow:hidden}
+  .final::before{content:""; position:absolute; width:520px; height:520px; border-radius:50%; background:radial-gradient(circle,rgba(188,98,71,.16),transparent 62%); top:-160px; right:50%}
+  .ctagrid{position:relative; display:grid; grid-template-columns:1.1fr 1fr; gap:44px; align-items:center}
+  .ctagrid h2{font-size:clamp(26px,3.4vw,40px); font-weight:700}
+  .ctagrid p{color:var(--muted-d); margin-top:14px}
+  .form{background:var(--m2); border:1px solid rgba(79,160,160,.2); border-radius:16px; padding:28px}
+  .form label{display:block; font-size:13px; color:var(--muted-d); margin-bottom:6px}
+  .form input,.form textarea{width:100%; background:var(--ink); border:1px solid rgba(79,160,160,.22); border-radius:9px; padding:12px 14px; color:#fff; font-family:inherit; font-size:15px; margin-bottom:15px}
+  .form input:focus,.form textarea:focus{outline:none; border-color:var(--accent)}
+  .form .btn-amber{width:100%; justify-content:center}
+  .form .note{font-size:12px; color:var(--muted-d); text-align:center; margin-top:10px}
+
+  /* footer */
+  footer{background:var(--ink); color:var(--muted-d); padding:54px 0 28px; font-size:14.5px; border-top:1px solid rgba(79,160,160,.14)}
+  .f-top{display:grid; grid-template-columns:1.5fr 1fr 1fr 1.1fr; gap:30px; padding-bottom:30px; border-bottom:1px solid rgba(79,160,160,.12)}
+  footer h4{font-family:"Space Grotesk"; color:#fff; font-size:14px; margin-bottom:13px}
+  footer a{display:block; color:var(--muted-d); margin-bottom:9px}
+  footer a:hover{color:var(--human)}
+  .f-bot{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; padding-top:20px; font-size:12.5px; color:#5f7373}
+
+  @media(max-width:920px){
+    .hero{grid-template-columns:1fr; min-height:auto}
+    .hero .seam-v{display:none}
+    .hero .h-machine{padding:84px 24px 56px}
+    .hero .h-human{padding:52px 24px 60px}
+    .privgrid,.ctagrid,.founder{grid-template-columns:1fr}
+    .cards3,.agrid,.egrid,.hilgrid,.ccards,.f-top{grid-template-columns:1fr 1fr}
+    .steps{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:1120px){
+    .nav-in{position:relative}
+    .burger{display:flex}
+    .nav-links{position:absolute; top:100%; left:0; right:0; flex-direction:column; align-items:stretch; gap:0; background:rgba(18,28,33,.98); backdrop-filter:blur(12px); border-bottom:1px solid rgba(79,160,160,.16); padding:6px 0; max-height:0; overflow:hidden; opacity:0; visibility:hidden; transition:max-height .32s ease, opacity .24s ease, visibility .32s}
+    header.open .nav-links{max-height:78vh; overflow:auto; opacity:1; visibility:visible}
+    .nav-links a{padding:14px 24px; font-size:16px; color:var(--text-d); border-top:1px solid rgba(79,160,160,.08)}
+    .nav-links a:first-child{border-top:0}
+  }
+  @media(max-width:600px){
+    section{padding:62px 0}
+    .cards3,.agrid,.egrid,.hilgrid,.ccards,.steps,.f-top{grid-template-columns:1fr}
+    .container{padding:0 18px}
+    .nav-cta{font-size:13px; padding:8px 12px}
+  }
+</style>
 </head>
 <body>
-  <main>
-    <h1>triagos<span class="dot">.</span></h1>
-    <div class="bar"></div>
-    <p>Сайт скоро откроется.</p>
-  </main>
+
+<!-- HEADER -->
+<header class="nav">
+  <div class="container nav-in">
+    <div class="logo"><svg class="mark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><rect x="13" y="3" width="6" height="2" rx="1" opacity=".55"/><rect x="10" y="8" width="12" height="5" rx="1.5" fill="#BC6247"/><rect x="7" y="15" width="18" height="5" rx="1.5" opacity=".65"/><rect x="4" y="22" width="24" height="6" rx="1.5"/></svg>триагос</div>
+    <nav class="nav-links" id="navLinks">
+      <a href="#how">Как работает</a>
+      <a href="#agents">Агенты</a>
+      <a href="#employees">Цифровые сотрудники</a>
+      <a href="#human">Человек в контуре</a>
+      <a href="#privacy">Приватность</a>
+      <a href="#founder">Об основателе</a>
+    </nav>
+    <div class="nav-right">
+      <a href="#cta" class="nav-cta">AI-аудит процессов</a>
+      <button class="burger" id="burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="seam-v"></div>
+  <div class="h-machine">
+    <span class="eyebrow">Внедрение ИИ в бизнес-процессы</span>
+    <h1><span class="ai">Скорость искусственного интеллекта.</span><br><span class="hu">Ответственность человека.</span></h1>
+    <p class="sub">Внедряем ИИ в ваши процессы так, что рутину берут агенты, а решения остаются за людьми.</p>
+    <div class="cta">
+      <a href="#cta" class="btn btn-amber">Провести AI-аудит процессов <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a href="#how" class="btn btn-ghost">Как это работает</a>
+    </div>
+    <div class="diff"><b>// не чат-бот — операционный конвейер с гейтами</b></div>
+  </div>
+  <div class="h-human">
+    <div class="duo" data-v="bc">
+      <svg viewBox="0 0 500 210" aria-hidden="true">
+        <!-- Как сейчас: прямая, человек за человеком (руст) -->
+        <path class="basePath base" d="M30 150 L470 150"/>
+        <circle class="n-h" cx="110" cy="150" r="9"/><circle class="n-h" cx="250" cy="150" r="9"/><circle class="n-h" cx="390" cy="150" r="9"/>
+        <!-- С ИИ: симметрично — плоский заход/выход, синусоида пересекает прямую в людях (впадины), агенты на пиках между ними (теал) -->
+        <path class="wavePath wave" d="M30 150 L110 150 C 130 150 155 55 180 55 C 205 55 230 150 250 150 C 270 150 295 55 320 55 C 345 55 370 150 390 150 L470 150"/>
+        <circle class="n-a" cx="180" cy="55" r="6.5"/><circle class="n-a" cx="320" cy="55" r="6.5"/>
+      </svg>
+      <div class="phase">☀ День 1</div>
+      <div class="score ai">С ИИ · <b>0</b> готово</div>
+      <div class="score man">Как сейчас · <b>0</b> · потеряно <i>0</i></div>
+    </div>
+    <div class="cap">Рутину берёт агент — решения остаются за человеком. Ночью люди спят, ИИ работает — но согласование ждёт утра.</div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="lightsec">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow">Проблема</span>
+      <h2>Рост упирается в людей и рутину</h2>
+      <p>Команда тонет в повторяющихся задачах, масштабирование требует нового найма, а экспертиза уходит вместе с сотрудниками.</p>
+    </div>
+    <div class="cards3">
+      <div class="pcard"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></div><h3>Рутина съедает время</h3><p>Обработка писем, документов, заявок и отчётов отнимает часы у людей, которые могли бы решать, а не перекладывать.</p></div>
+      <div class="pcard"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>Масштаб требует найма</h3><p>Каждый рост объёма — это новые ставки, обучение и риски. Мощность компании упирается в скорость найма.</p></div>
+      <div class="pcard"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg></div><h3>Экспертиза уходит</h3><p>Знания и наработки живут в головах. Уходит человек — и процесс приходится собирать заново.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="dark">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow">Как это работает</span>
+      <h2>Скорость ИИ на исполнении. Гейт — у человека.</h2>
+      <p>Мы строим не «болталку», а инженерный конвейер: агенты быстро делают черновую работу, а на ключевых точках решение подтверждает человек. Каждое действие агента фиксируется, и агент не может утвердить сам себя.</p>
+    </div>
+    <div class="flow">
+      <div class="fstep"><div class="k">Агент</div><h4>Приём</h4><p>Забирает входящее, распознаёт, классифицирует.</p></div>
+      <div class="fstep"><div class="k">Агент</div><h4>Обработка</h4><p>Собирает данные, готовит черновик и расчёт.</p></div>
+      <div class="fgate"><div class="k">Гейт</div><h4><svg class="ic" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Человек</h4><p>Проверяет и утверждает.</p></div>
+      <div class="fstep"><div class="k">Агент</div><h4>Оформление</h4><p>Формирует документ, вносит в систему.</p></div>
+      <div class="fgate"><div class="k">Гейт</div><h4><svg class="ic" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Человек</h4><p>Отправка / подпись.</p></div>
+    </div>
+    <p class="flow-note"><b>Градуированная автономия:</b> простое — автоматически, важное — после подтверждения, критичное (деньги, договоры, первый контакт) — всегда через человека. Плюс kill switch в любой момент.</p>
+  </div>
+</section>
+
+<!-- AGENTS -->
+<section id="agents" class="lightsec">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow">Агенты / сценарии</span>
+      <h2>Знакомая боль — работающее решение</h2>
+      <p>Каждый сценарий — конкретная рутина, которую забирает агент. Решение на ключевых точках остаётся за человеком.</p>
+    </div>
+    <!-- РАЗДЕЛ 1: Коммуникации и клиенты -->
+    <div class="agroup">
+      <div class="glabel"><span class="gt">Коммуникации и клиенты</span><span class="gline"></span></div>
+      <div class="agrid">
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>Почта — сотни писем в день. Важное тонет между рассылок, к вечеру уже не вспомнить, что просили утром.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Агент разбирает входящую почту, выделяет главное и сроки, приоритизирует и готовит черновики ответов и задачи.</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Что отправить и на что реагировать — решаете вы.</span></div>
+          </div>
+        </div>
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M3 4.5h18l-7 8.5V20l-4-2.5v-5z"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>Заявки приходят с сайта, почты и мессенджеров вразнобой. Часть теряется, на часть отвечают через день — и лид остывает.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Агент собирает обращения из всех каналов, отвечает первой линией 24/7, квалифицирует, заводит в CRM и готовит черновик КП.</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Цену, договор и отправку клиенту подтверждает менеджер.</span></div>
+          </div>
+        </div>
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-4 3V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/><path d="M12.5 6.6l1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2L9.3 8.9l2.2-.3z"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>Отзывы о компании появляются на картах, маркетплейсах и в соцсетях. Заметить негатив вовремя вручную невозможно — узнаём, когда уже поздно.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Агент мониторит площадки, находит новые отзывы и упоминания, оценивает тональность и готовит черновики ответов.</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Публичный ответ от лица компании утверждает человек.</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- РАЗДЕЛ 2: Документы и делопроизводство -->
+    <div class="agroup">
+      <div class="glabel"><span class="gt">Документы и делопроизводство</span><span class="gline"></span></div>
+      <div class="agrid">
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 12.5h5"/><circle cx="14.5" cy="17.3" r="2.5"/><path d="M13.4 17.3l.8.8 1.5-1.6"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>Входящие письма регистрируют руками, а договоры и типовые документы каждый раз собирают из шаблонов с нуля. Рутина съедает дни и тормозит согласования.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Агент регистрирует и маршрутизирует входящее, ведёт номенклатуру и готовит черновики договоров и писем из ваших шаблонов и данных.</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Согласование и подпись — за человеком.</span></div>
+          </div>
+        </div>
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M6 2.5v19l2-1.3 2 1.3 2-1.3 2 1.3 2-1.3 2 1.3v-19l-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3z"/><path d="M10 8h2.3a1.6 1.6 0 0 1 0 3.2H10M10 8v6M9 11.2h3.3"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>Счета сыплются на почту, и бухгалтер вручную заносит каждый в 1С — часы работы, ошибки и длительные согласования.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Агент забирает счета из почты, распознаёт реквизиты и суммы и создаёт черновики документов прямо в 1С.</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Проверку и проведение оставляет за собой бухгалтер.</span></div>
+          </div>
+        </div>
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M5 3.5h14a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1z"/><path d="M7 17.5l5-8 5 8z"/><path d="M7 17.5h10"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>Проектная документация собирается вручную по стадиям — базовый проект, П, Р, РД. Однотипные разделы переписывают заново, сроки горят, комплектность страдает.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Агент готовит черновики документации по вашим шаблонам и нормативам — от базового проекта (БП) до стадий П, Р, РД — и следит за комплектностью разделов.</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Инженерные решения и утверждение — за проектировщиком и ГИПом.</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- РАЗДЕЛ 3: Знания, встречи, аналитика -->
+    <div class="agroup">
+      <div class="glabel"><span class="gt">Знания, встречи, аналитика</span><span class="gline"></span></div>
+      <div class="agrid">
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M20 5v6c0 1.66-3.58 3-8 3s-8-1.34-8-3V5"/><path d="M20 11v6c0 1.66-3.58 3-8 3s-8-1.34-8-3v-6"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>Спрашиваем внешние нейросети по рабочим вопросам, но знания компании нигде не собраны — каждый раз объясняем заново, а данные уходят в чужое облако.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Своя база знаний плюс локальный ИИ, который отвечает по вашим документам, регламентам и накопленному опыту. Данные не покидают ваш контур.</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Что считать источником правды — определяете вы.</span></div>
+          </div>
+        </div>
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M3 8V6a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v1"/><path d="M3 8h18v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="14" r="3.1"/><path d="M12 12.6V14l1 .7"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>У проекта длинная история — переписка, файлы, договорённости, решения. Новый человек входит неделями, а нужная деталь всплывает в самый неподходящий момент.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Агент держит весь контекст проекта — письма, документы, договорённости — отвечает по нему и готовит сводку статуса и следующие шаги.</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Приоритеты и решения по проекту — за руководителем.</span></div>
+          </div>
+        </div>
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>Совещаний много, а договорённости тонут. Кто что обещал — вспоминают на следующей встрече, задачи всплывают с опозданием.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Агент расшифровывает встречу (можно локально), готовит черновик протокола и выносит поручения в канбан. Перед следующей встречей — сводка «что поручали и что сделано».</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Протокол и рассылку утверждает ведущий.</span></div>
+          </div>
+        </div>
+
+        <div class="scard">
+          <div class="pain">
+            <div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+            <div class="lab"><i></i>Боль</div>
+            <h3>Отчёт нужен «к понедельнику», а аналитик неделю сводит данные из разных систем вручную — к готовности цифры уже устарели.</h3>
+          </div>
+          <div class="seam"></div>
+          <div class="sol">
+            <div class="lab"><i></i>Решение</div>
+            <p>Агент собирает данные из систем, обновляет дашборды и готовит черновик отчёта с выводами.</p>
+            <div class="gate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Интерпретацию и решения оставляет за собой руководитель.</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIGITAL EMPLOYEES -->
+<section id="employees" class="dark">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow">Цифровые сотрудники</span>
+      <h2>Команда, которая закрывает рутину — без раздувания штата</h2>
+      <p>Соберите цифрового сотрудника под роль: он берёт на себя рутинную часть работы 24/7 и разгружает команду, а решения и ответственность остаются за людьми. По сути — сценарии выше, собранные в готовую роль.</p>
+    </div>
+    <div class="egrid">
+
+      <div class="ecard">
+        <div class="eava"><svg class="ic" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="7" rx="1.5"/><rect x="2" y="13" width="20" height="7" rx="1.5"/><path d="M6 7.5h.01M6 16.5h.01"/></svg></div>
+        <div class="erole">Цифровой сисадмин</div>
+        <div class="etask">Держит инфраструктуру в порядке и заводит доступы — без ожидания и тикетов.</div>
+        <ul class="elist">
+          <li>Создание почтовых ящиков и учётных записей</li>
+          <li>Резервные копии и контроль их целостности</li>
+          <li>Мониторинг серверов, алерты об инцидентах</li>
+        </ul>
+        <div class="egate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Контролирует человек</span>Критичные изменения инфраструктуры — по согласованию.</span></div>
+      </div>
+
+      <div class="ecard">
+        <div class="eava"><svg class="ic" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m15 11 2 2 4-4"/></svg></div>
+        <div class="erole">Цифровой менеджер по продажам</div>
+        <div class="etask">Ни одно обращение не остывает: обрабатывает, квалифицирует, ведёт сделку в CRM.</div>
+        <ul class="elist">
+          <li>Ответ на входящие 24/7 и квалификация лида</li>
+          <li>Черновики КП и коммерческих писем</li>
+          <li>Напоминания и обновление сделок в CRM</li>
+        </ul>
+        <div class="egate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Цену, договор и отправку клиенту подтверждает менеджер.</span></div>
+      </div>
+
+      <div class="ecard">
+        <div class="eava"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="erole">Цифровой секретарь</div>
+        <div class="etask">Ведёт переписку, документы и организацию поездок, освобождая руководителя от быта.</div>
+        <ul class="elist">
+          <li>Письма, регистрация и напоминания</li>
+          <li>Командировки: билеты, гостиницы, согласования</li>
+          <li>Ведение календаря и встреч</li>
+        </ul>
+        <div class="egate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Брони и расходы подтверждает человек.</span></div>
+      </div>
+
+      <div class="ecard">
+        <div class="eava"><svg class="ic" viewBox="0 0 24 24"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="m9 14 2 2 4-4"/></svg></div>
+        <div class="erole">Цифровой помощник РП</div>
+        <div class="etask">Держит проект под контролем: переписка, задачи, статусы — всё сведено и не теряется.</div>
+        <ul class="elist">
+          <li>Переписка и коммуникации по проекту</li>
+          <li>Контроль выполнения задач и сроков</li>
+          <li>Напоминания исполнителям и сводки статуса</li>
+        </ul>
+        <div class="egate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Приоритеты и решения по проекту — за руководителем проекта.</span></div>
+      </div>
+
+      <div class="ecard">
+        <div class="eava"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h4"/></svg></div>
+        <div class="erole">Цифровой сотрудник бухгалтерии</div>
+        <div class="etask">Снимает с бухгалтера ручной ввод и сверки — первичка и формы готовы к проверке.</div>
+        <ul class="elist">
+          <li>Сбор первички и занесение счетов в 1С</li>
+          <li>Сверки и подготовка форм отчётности</li>
+          <li>Контроль расхождений и дублей</li>
+        </ul>
+        <div class="egate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Подпись КЭП и отправку в ФНС делает только человек.</span></div>
+      </div>
+
+      <div class="ecard">
+        <div class="eava"><svg class="ic" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="7"/><rect x="12" y="7" width="3" height="11"/><rect x="17" y="4" width="3" height="14"/></svg></div>
+        <div class="erole">Цифровой аналитик</div>
+        <div class="etask">Собирает данные из систем и превращает их в отчёты и дашборды к сроку.</div>
+        <ul class="elist">
+          <li>Сбор и сведение данных из разных систем</li>
+          <li>Обновление дашбордов в реальном времени</li>
+          <li>Черновики отчётов с выводами</li>
+        </ul>
+        <div class="egate"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><span class="g-t">Решает человек</span>Интерпретацию и решения оставляет за собой руководитель.</span></div>
+      </div>
+
+    </div>
+    <p class="flow-note" style="margin-top:24px"><b>Как это работает:</b> цифровой сотрудник живёт в ваших системах, действует через те же гейты и в любой момент останавливается kill switch'ем — вы всегда видите, что он сделал.</p>
+  </div>
+</section>
+
+<!-- HUMAN IN THE LOOP -->
+<section id="human" class="ambersec hil">
+  <div class="container">
+    <span class="eyebrow" style="color:var(--human)">Человек в контуре</span>
+    <p class="big" style="margin-top:14px">Мы не заменяем людей — мы меняем то, чем они заняты.</p>
+    <div class="hilgrid">
+      <div class="hilcard"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg></div><h3>Прозрачность</h3><p>Видно, где и как применяется ИИ, что он сделал и на каких данных.</p></div>
+      <div class="hilcard"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div><h3>Гейты у людей</h3><p>Значимые решения — деньги, договоры, отправка — утверждает человек.</p></div>
+      <div class="hilcard"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div><h3>Kill switch</h3><p>Любой процесс можно остановить и вернуть под ручное управление в один клик.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY / ON-PREM -->
+<section id="privacy" class="darker">
+  <div class="container">
+    <div class="privgrid">
+      <div>
+        <span class="eyebrow" style="color:var(--accent)">Приватность и on-prem</span>
+        <h2 style="margin-top:14px; font-size:clamp(27px,3.6vw,40px); font-weight:700">Данные не покидают ваш контур</h2>
+        <p style="color:var(--muted-d); margin-top:16px; font-size:18px">Там, где данные чувствительны, мы разворачиваем модели локально — в вашей инфраструктуре. Особенно важно для промышленности, госсектора и объектов с требованиями к защите данных.</p>
+      </div>
+      <div class="priv-badges">
+        <div class="pbadge"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><h4>Локальные модели</h4><p>Развёртывание LLM on-prem — данные остаются внутри периметра.</p></div></div>
+        <div class="pbadge"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><h4>Контроль доступа и аудит</h4><p>Каждое действие агента фиксируется; кто, что и когда — прозрачно.</p></div></div>
+        <div class="pbadge"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></div><div><h4>Гибрид по задаче</h4><p>Где можно — облако для качества; где чувствительно — только локально.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS LADDER -->
+<section class="lightsec">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow">Как мы работаем</span>
+      <h2>Начинаем с малого, масштабируем по результату</h2>
+      <p>На каждом шаге — конкретный результат, который остаётся у вас: карта, отчёт, работающий контур. Запускаем ИИ рядом с людьми, замеряем 1–2 месяца — и только потом масштабируем.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="top"><div class="sico"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div><div class="sk">Шаг 1</div></div>
+        <h3>AI-аудит процессов</h3>
+        <p class="sbody">Смотрим ваши процессы и находим, где ИИ даст эффект быстрее всего.</p>
+        <ul class="slist"><li>Карта процессов и узких мест</li><li>Приоритеты по эффекту и риску</li><li>Дорожная карта внедрения</li></ul>
+      </div>
+      <div class="step">
+        <div class="top"><div class="sico"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div><div class="sk">Шаг 2</div></div>
+        <h3>Пилот / PoC</h3>
+        <p class="sbody">Один процесс, измеримый результат — запускаем ИИ рядом с людьми и замеряем.</p>
+        <ul class="slist"><li>Один процесс за 1–2 месяца</li><li>Замер скорости, качества, затрат</li><li>Отчёт «идём дальше или нет»</li></ul>
+      </div>
+      <div class="step">
+        <div class="top"><div class="sico"><svg class="ic" viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M8 8h8v3a4 4 0 0 1-8 0z"/><path d="M12 15v7"/></svg></div><div class="sk">Шаг 3</div></div>
+        <h3>Внедрение с гейтами</h3>
+        <p class="sbody">Встраиваем агента в процесс — с человеческими гейтами и аудитом действий.</p>
+        <ul class="slist"><li>Интеграция в ваши системы (ERP, 1С, почта)</li><li>Гейты на ключевых точках</li><li>Каждое действие фиксируется</li></ul>
+      </div>
+      <div class="step">
+        <div class="top"><div class="sico"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></div><div class="sk">Шаг 4</div></div>
+        <h3>Сопровождение и масштаб</h3>
+        <p class="sbody">Вы владеете работающим активом, мы поддерживаем и расширяем на другие процессы.</p>
+        <ul class="slist"><li>Мониторинг и поддержка</li><li>Донастройка под изменения</li><li>Масштаб на другие подразделения</li><li>Опция: on-prem / цифровой сотрудник как услуга</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASES -->
+<section class="dark">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow">Эффект</span>
+      <h2>Что меняется на практике</h2>
+    </div>
+    <div class="ccards">
+      <div class="ccard"><div class="metric">24/7</div><h3>Обработка без пауз</h3><p>Входящие и заявки не ждут утра и рабочего дня.</p></div>
+      <div class="ccard"><div class="metric">−30…70%</div><h3>Рутинной нагрузки</h3><p>Ожидаемая разгрузка команды от повторяющихся операций.</p></div>
+      <div class="ccard"><div class="metric">×N</div><h3>Больше тем же составом</h3><p>Растёт объём работы без пропорционального роста штата.</p></div>
+    </div>
+    <p class="cases-disc">// цифры — ориентир ожидаемого эффекта, зависят от процесса; уточняются на AI-аудите и пилоте.</p>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section id="founder" class="lightsec">
+  <div class="container">
+    <div class="head" style="margin-bottom:36px">
+      <span class="eyebrow">Об основателе</span>
+      <h2>За подходом — человек, а не хайп</h2>
+    </div>
+    <div class="founder">
+      <div class="fphoto"><img src="founder.webp" alt="Александр Васильев" width="960" height="1280" loading="lazy"></div>
+      <div>
+        <p class="quote">«Двадцать лет я строю бизнесы и сложную технику руками — путь от строительной компании до разработки собственной микроэлектроники: промышленных контроллеров Пассер и Ларус и системы вибродиагностики на сотнях каналов в структурах Росатома. Я знаю, чего стоит довести инженерный продукт до эксплуатации и вести живые команды. Поэтому к ИИ отношусь без иллюзий: он даёт скорость, но ответственность и решения остаются за людьми.»</p>
+        <div class="sign">Александр Васильев<span>основатель · 20+ лет в управлении · Executive MBA</span></div>
+        <div class="fchips">
+          <span class="fchip">Путь <b>от стройки</b> до <b>микроэлектроники</b></span>
+          <span class="fchip"><b>20+ лет</b> в управлении</span>
+          <span class="fchip">Производство контроллеров <b>Пассер</b> и <b>Ларус</b></span>
+          <span class="fchip">Гранты <b>РФРИТ</b> и <b>Минпромторга</b></span>
+          <span class="fchip">Диагностика в структурах <b>Росатома</b> — 600+ каналов</span>
+          <span class="fchip">Спикер по промышленному ИИ</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA + FORM -->
+<section id="cta" class="dark final">
+  <div class="container">
+    <div class="ctagrid">
+      <div>
+        <span class="eyebrow" style="color:var(--accent)">Первый шаг</span>
+        <h2 style="margin-top:14px">Начните с AI-аудита процессов</h2>
+        <p>Посмотрим ваши процессы и покажем, где ИИ даст эффект быстрее всего — с сохранением контроля за людьми. Без обязательств.</p>
+      </div>
+      <form class="form" onsubmit="return false">
+        <label>Имя</label><input type="text" placeholder="Как к вам обращаться">
+        <label>Компания</label><input type="text" placeholder="Название компании">
+        <label>Контакт</label><input type="text" placeholder="Телефон или e-mail">
+        <label>Задача</label><textarea rows="3" placeholder="Какой процесс хотите ускорить"></textarea>
+        <button class="btn btn-amber">Запросить AI-аудит</button>
+        <p class="note">Прототип — форма демонстрационная.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="f-top">
+      <div>
+        <div class="logo" style="margin-bottom:12px"><svg class="mark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><rect x="13" y="3" width="6" height="2" rx="1" opacity=".55"/><rect x="10" y="8" width="12" height="5" rx="1.5" fill="#BC6247"/><rect x="7" y="15" width="18" height="5" rx="1.5" opacity=".65"/><rect x="4" y="22" width="24" height="6" rx="1.5"/></svg>триагос</div>
+        <p style="max-width:40ch; color:var(--muted-d)">Внедрение ИИ в бизнес-процессы: скорость искусственного интеллекта, ответственность человека.</p>
+      </div>
+      <div>
+        <h4>Направление</h4>
+        <a href="#how">Как это работает</a>
+        <a href="#agents">Агенты и сценарии</a>
+        <a href="#employees">Цифровые сотрудники</a>
+        <a href="#human">Человек в контуре</a>
+        <a href="#privacy">Приватность и on-prem</a>
+      </div>
+      <div>
+        <h4>Компания</h4>
+        <a href="#founder">Об основателе</a>
+        <a href="#cta">AI-аудит процессов</a>
+        <a href="#">Политика обработки данных</a>
+      </div>
+      <div>
+        <h4>Контакты</h4>
+        <a href="tel:+79217702973">+7 921 770-29-73</a>
+        <a href="https://t.me/av_127" target="_blank" rel="noopener">Telegram @av_127</a>
+        <a href="mailto:info@triagos.ru">info@triagos.ru</a>
+      </div>
+    </div>
+    <div class="f-bot">
+      <span>триагос · внедрение ИИ в бизнес-процессы</span>
+      <span>© 2026 · прототип · triagos.ru</span>
+    </div>
+  </div>
+</footer>
+
+<!-- hero signature engine: две реальности одной задачи + цикл день/ночь + гейт согласования + счёт -->
+<script>
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ── настройки (реальные секунды) ──
+  const SCALE=1;      // множитель времени
+  const SPAWN=1.5;    // сек между входящими задачами
+  const GAP=0.055;    // зазор в очереди (доля пути)
+  const TSPEED=0.34;  // скорость проезда (доля/сек)
+  const DROP=3;       // очередь у человека > DROP → голова испаряется (потеряно)
+  const TEAL='#5FB0B0';
+  const DAY=24, NIGHT=8; // длительность дня/ночи, сек
+  const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+  const lp=(a,b,t)=>Math.round(a+(b-a)*t);
+  function weightColor(w){ const t=Math.max(0,Math.min(1,(7-w)/7)); return 'rgb('+lp(82,227,t)+','+lp(46,190,t)+','+lp(30,164,t)+')'; } // тёмно→светло-коричневый
+  function circleEl(cls,r){ const c=document.createElementNS(NS,'circle'); c.setAttribute('class',cls); c.setAttribute('r',r); return c; }
+  function fracOf(path,len,el){ const cx=+el.getAttribute('cx'),cy=+el.getAttribute('cy'); let best=0,bestD=Infinity,N=400; for(let i=0;i<=N;i++){ const f=i/N,p=path.getPointAtLength(f*len),d=(p.x-cx)**2+(p.y-cy)**2; if(d<bestD){bestD=d;best=f;} } return best; }
+
+  // ── фаза день/ночь ──
+  let phase='day', phaseT=0, dayNum=1;
+
+  const engines=[];
+  document.querySelectorAll('.duo').forEach(duo=>{
+    const svg=duo.querySelector('svg');
+    const basePath=duo.querySelector('.basePath'), wavePath=duo.querySelector('.wavePath');
+    if(!basePath||!wavePath) return;
+    const bLen=basePath.getTotalLength(), wLen=wavePath.getTotalLength();
+    const humanF=[...duo.querySelectorAll('.n-h')].map(el=>fracOf(basePath,bLen,el)).sort((a,b)=>a-b);
+    const agentF=[...duo.querySelectorAll('.n-a')].map(el=>fracOf(wavePath,wLen,el)).sort((a,b)=>a-b);
+    // коричневая линия «как сейчас»: люди держат задачу min(1..5, вес) сек, снимают вес; очередь; потери
+    const brown={ kind:'brown',duo,path:basePath,len:bLen,stations:humanF.map(f=>({f,busy:null})),tasks:[],drop:true,
+      service:t=> t.w<=0?0.25:Math.min(ri(1,5),t.w),
+      onEnd:(t,r,si)=>{ if(t.w>0){ t.w=Math.max(0,t.w-r); t.core.setAttribute('fill',weightColor(t.w)); } } };
+    // бирюзовая волна «с ИИ»: агент за 0,25с обнуляет вес и красит в бирюзу; человек-согласователь (gateF) — гейт
+    const midHumanEl=[...duo.querySelectorAll('.n-h')][1]; // первый человек после первого агента = согласователь
+    const teal={ kind:'teal',duo,path:wavePath,len:wLen,gateF:fracOf(wavePath,wLen,midHumanEl),stations:agentF.map(f=>({f,busy:null})),tasks:[],drop:false,
+      service:()=>0.25,
+      onEnd:(t,r,si)=>{ if(si===0){ t.w=0; t.core.setAttribute('fill',TEAL); } } };
+    function spawn(lane,w){ const g=document.createElementNS(NS,'g'); const core=circleEl('task',4.6); core.setAttribute('fill',weightColor(w)); g.appendChild(core); svg.appendChild(g); const t={g,core,lane,w,si:0,state:'move',p:0,r:0,timer:0}; lane.tasks.push(t); return t; }
+    engines.push({brown,teal,lanes:[brown,teal],spawn,acc:SPAWN*0.5,duo});
+    if(reduce){
+      const s=(ln,p,w,tl)=>{ const t=spawn(ln,w); t.p=p; if(tl){ t.w=0; t.core.setAttribute('fill',TEAL); } const pt=ln.path.getPointAtLength(p*ln.len); t.g.setAttribute('transform','translate('+pt.x+','+pt.y+')'); };
+      s(brown,0.30,6); s(brown,0.60,3); s(brown,0.68,4); s(teal,0.52,0,true); s(teal,0.86,0,true);
+    }
+  });
+
+  // ── счёт + фаза ──
+  const bc=document.querySelector('.duo[data-v="bc"]');
+  const aiEl=bc&&bc.querySelector('.score.ai'), manEl=bc&&bc.querySelector('.score.man'), phaseEl=bc&&bc.querySelector('.phase');
+  let ai=0, man=0, lost=0;
+  const pop=el=>{ el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),170); };
+  const setAi=()=>{ if(aiEl){ aiEl.querySelector('b').textContent=ai; pop(aiEl); } };
+  const setMan=()=>{ if(manEl){ manEl.querySelector('b').textContent=man; manEl.querySelector('i').textContent=lost; pop(manEl); } };
+  const flashAt=(x,y,text,cls)=>{ if(!bc) return; const el=document.createElement('div'); el.className='flash '+cls; el.textContent=text; el.style.left=(x/500*100)+'%'; el.style.top=(y/210*100)+'%'; bc.appendChild(el); setTimeout(()=>{ if(el.parentNode) el.remove(); },1300); };
+  function setPhaseUI(){ if(!phaseEl) return; if(phase==='night'){ phaseEl.textContent='🌙 Ночь · люди спят, ИИ работает'; phaseEl.classList.add('night'); bc.classList.add('night'); } else { phaseEl.textContent='☀ День '+dayNum; phaseEl.classList.remove('night'); bc.classList.remove('night'); } }
+  if(bc){
+    bc.addEventListener('done', e=>{
+      if(e.detail.kind==='teal'){ ai++; setAi(); flashAt(e.detail.x,e.detail.y,'готово','done'); }
+      else { man++; setMan(); }
+    });
+    bc.addEventListener('lost', e=>{ lost++; setMan(); flashAt(e.detail.x,e.detail.y,'потеряно','lost'); });
+  }
+
+  if(reduce || !engines.length){ if(bc) setPhaseUI(); return; }
+  let last=null, running=true;
+  window.__freezeHero=()=>{ running=false; };
+  function emit(lane,p,name){ const pt=lane.path.getPointAtLength(Math.min(p,1)*lane.len); lane.duo.dispatchEvent(new CustomEvent(name,{detail:{x:pt.x,y:pt.y,kind:lane.kind}})); }
+  function stepLane(lane,sdt){
+    const nS=lane.stations.length;
+    const frozen=(phase==='night' && lane.kind==='brown');   // люди спят
+    const order=lane.tasks.slice().sort((a,b)=>a.p-b.p);
+    for(let i=0;i<order.length;i++){
+      const t=order[i];
+      if(t.state==='proc'){ if(!frozen){ t.timer-=sdt; if(t.timer<=0){ lane.onEnd(t,t.r,t.si); lane.stations[t.si].busy=null; t.si++; t.state=(t.si>=nS)?'exit':'move'; } } continue; }
+      if(t.state==='gone') continue;
+      let target=(t.state==='exit')?1.05:lane.stations[t.si].f;
+      // ночной гейт согласования: teal-задача, уже прошедшая агента, упирается в спящего человека (gateF) и ждёт утра
+      const gated=(lane.kind==='teal' && phase==='night' && target>lane.gateF+1e-4 && t.p<lane.gateF+1e-4);
+      if(gated) target=lane.gateF;
+      let ddT=target-t.p; if(ddT<0) ddT=0;
+      const L=order[i+1]; const ddL=L?(L.p-t.p):Infinity;
+      t.p+=Math.min(TSPEED*sdt, Math.max(0, Math.min(ddT, ddL-GAP)));
+      if(!frozen && !gated && t.state!=='exit' && (target-t.p)<1e-3){ const st=lane.stations[t.si]; if(!st.busy){ st.busy=t; t.state='proc'; t.r=lane.service(t); t.timer=t.r; } }
+    }
+    if(lane.drop && !frozen){
+      for(let si=0;si<nS;si++){
+        const waiting=lane.tasks.filter(t=>t.si===si && t.state==='move');
+        if(waiting.length>DROP){
+          waiting.sort((a,b)=>b.p-a.p); // фронт = первый приехавший
+          const v=waiting[0]; v.state='gone'; v.core.classList.add('gone'); emit(lane,v.p,'lost');
+          const g=v.g; setTimeout(()=>{ if(g.parentNode) g.parentNode.removeChild(g); },440);
+          lane.tasks=lane.tasks.filter(x=>x!==v);
+        }
+      }
+    }
+    lane.tasks=lane.tasks.filter(t=>{
+      if(t.p>1.0){ emit(lane,1,'done'); if(t.g.parentNode) t.g.parentNode.removeChild(t.g); return false; }
+      const pt=lane.path.getPointAtLength(t.p*lane.len);
+      t.g.setAttribute('transform','translate('+pt.x+','+pt.y+')');
+      return true;
+    });
+  }
+  function onNight(){ setPhaseUI(); }
+  function onDawn(){ dayNum++; setPhaseUI(); ai=0; man=0; lost=0; setAi(); setMan(); }
+  function frame(sdt){
+    phaseT+=sdt;
+    if(phase==='day' && phaseT>=DAY){ phase='night'; phaseT=0; onNight(); }
+    else if(phase==='night' && phaseT>=NIGHT){ phase='day'; phaseT=0; onDawn(); }
+    engines.forEach(eng=>{ eng.acc+=sdt; if(eng.acc>=SPAWN){ eng.acc-=SPAWN; const w=ri(2,7); eng.spawn(eng.brown,w); eng.spawn(eng.teal,w); } eng.lanes.forEach(l=>stepLane(l,sdt)); });
+  }
+  function loop(ts){ if(!running) return; if(last===null) last=ts; let dt=(ts-last)/1000; last=ts; if(dt>0.05) dt=0.05; frame(dt*SCALE); requestAnimationFrame(loop); }
+  setPhaseUI();
+  requestAnimationFrame(loop);
+})();
+</script>
+
+<!-- выравнивание высоты зоны «Боль» → единая линия шва в каждом ряду -->
+<script>
+(function(){
+  function equalize(){
+    var pains=[].slice.call(document.querySelectorAll('.scard .pain'));
+    if(!pains.length) return;
+    pains.forEach(function(p){ p.style.minHeight=''; });
+    var max=0;
+    pains.forEach(function(p){ if(p.offsetHeight>max) max=p.offsetHeight; });
+    pains.forEach(function(p){ p.style.minHeight=max+'px'; });
+  }
+  window.addEventListener('load',equalize);
+  if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(equalize); }
+  var t; window.addEventListener('resize',function(){ clearTimeout(t); t=setTimeout(equalize,120); });
+})();
+</script>
+
+<!-- мобильная навигация: бургер -->
+<script>
+(function(){
+  var header=document.querySelector('header.nav');
+  var burger=document.getElementById('burger');
+  var links=document.getElementById('navLinks');
+  if(!header||!burger||!links) return;
+  function setOpen(o){ header.classList.toggle('open',o); burger.setAttribute('aria-expanded',o?'true':'false'); burger.setAttribute('aria-label',o?'Закрыть меню':'Открыть меню'); }
+  burger.addEventListener('click',function(){ setOpen(!header.classList.contains('open')); });
+  links.addEventListener('click',function(e){ if(e.target.closest('a')) setOpen(false); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
+  window.addEventListener('resize',function(){ if(window.innerWidth>1120) setOpen(false); });
+})();
+</script>
 </body>
 </html>
