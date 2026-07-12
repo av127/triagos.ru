@@ -742,16 +742,18 @@
         <h2 style="margin-top:14px">Начните с AI-аудита процессов</h2>
         <p>Посмотрим ваши процессы и покажем, где ИИ даст эффект быстрее всего — с сохранением контроля за людьми. Без обязательств.</p>
       </div>
-      <!-- Формспри: замените ВАШ_ID на id формы из formspree.io (создать форму, привязать info@triagos.ru).
-           Пока ВАШ_ID не заменён — заявка уходит через почтовый клиент на info@triagos.ru (см. скрипт внизу).
-           ⚠ 152-ФЗ ст.18.5: Formspree хранит данные вне РФ — до публичного запуска решить (Formspree с согласием / РФ-сервис / mailto). -->
-      <form class="form" action="https://formspree.io/f/ВАШ_ID" method="POST">
+      <!-- FormSubmit (бесплатно, без аккаунта). ВАЖНО: первая отправка формы вышлет на info@triagos.ru
+           письмо активации — один раз перейти по ссылке в нём, после чего заявки доходят автоматически.
+           ⚠ 152-ФЗ ст.18.5: FormSubmit хранит данные вне РФ (отражено в политике /privacy.html). -->
+      <form class="form" action="https://formsubmit.co/info@triagos.ru" method="POST">
         <label>Имя</label><input type="text" name="name" placeholder="Как к вам обращаться" required>
         <label>Компания</label><input type="text" name="company" placeholder="Название компании">
         <label>Контакт</label><input type="text" name="contact" placeholder="Телефон или e-mail" required>
         <label>Задача</label><textarea name="message" rows="3" placeholder="Какой процесс хотите ускорить"></textarea>
         <input type="hidden" name="_subject" value="triagos.ru — заявка на AI-аудит">
-        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
         <label class="consent"><input type="checkbox" name="consent" required> Даю согласие на обработку персональных данных согласно <a href="/privacy.html">политике</a>.</label>
         <button class="btn btn-amber" type="submit">Запросить AI-аудит</button>
         <p class="note">Ответим на указанный контакт в течение рабочего дня.</p>
@@ -945,22 +947,5 @@
 })();
 </script>
 
-<!-- форма: пока боевой обработчик не подключён — уходит на info@triagos.ru через почтовый клиент (РФ-ящик, без зарубежного хранилища) -->
-<script>
-(function(){
-  var form=document.querySelector('form.form');
-  if(!form) return;
-  form.addEventListener('submit', function(e){
-    var action=form.getAttribute('action')||'';
-    if(action.indexOf('ВАШ_ID')!==-1){           // боевой обработчик ещё не задан → фолбэк на почту
-      e.preventDefault();
-      var g=function(n){ var el=form.querySelector('[name="'+n+'"]'); return el?el.value.trim():''; };
-      var body='Имя: '+g('name')+'\nКомпания: '+g('company')+'\nКонтакт: '+g('contact')+'\nЗадача: '+g('message');
-      window.location.href='mailto:info@triagos.ru?subject='+encodeURIComponent('triagos.ru — заявка на AI-аудит')+'&body='+encodeURIComponent(body);
-    }
-    // иначе — обычный POST на боевой обработчик (Formspree и т.п.)
-  });
-})();
-</script>
 </body>
 </html>
