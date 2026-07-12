@@ -239,6 +239,9 @@
   .form input:focus,.form textarea:focus{outline:none; border-color:var(--accent)}
   .form .btn-amber{width:100%; justify-content:center}
   .form .note{font-size:12px; color:var(--muted-d); text-align:center; margin-top:10px}
+  .form .consent{display:flex; gap:9px; align-items:flex-start; font-size:12.5px; color:var(--muted-d); line-height:1.4; margin:2px 0 14px; cursor:pointer}
+  .form .consent input{width:auto; flex:none; margin:2px 0 0; accent-color:var(--accent)}
+  .form .consent a{color:var(--accent)}
 
   /* footer */
   footer{background:var(--ink); color:var(--muted-d); padding:54px 0 28px; font-size:14.5px; border-top:1px solid rgba(79,160,160,.14)}
@@ -715,14 +718,14 @@
     <div class="founder">
       <div class="fphoto"><img src="founder.webp" alt="Александр Васильев" width="960" height="1280" loading="lazy"></div>
       <div>
-        <p class="quote">«Двадцать лет я строю бизнесы и сложную технику руками — путь от строительной компании до разработки собственной микроэлектроники: промышленных контроллеров Пассер и Ларус и системы вибродиагностики на сотнях каналов в структурах Росатома. Я знаю, чего стоит довести инженерный продукт до эксплуатации и вести живые команды. Поэтому к ИИ отношусь без иллюзий: он даёт скорость, но ответственность и решения остаются за людьми.»</p>
+        <p class="quote">«Двадцать лет я строю бизнесы и сложную технику руками — путь от строительной компании до разработки собственной промышленной микроэлектроники и систем диагностики оборудования на сотнях каналов в крупной промышленности. Я знаю, чего стоит довести инженерный продукт до эксплуатации и вести живые команды. Поэтому к ИИ отношусь без иллюзий: он даёт скорость, но ответственность и решения остаются за людьми.»</p>
         <div class="sign">Александр Васильев<span>основатель · 20+ лет в управлении · Executive MBA</span></div>
         <div class="fchips">
           <span class="fchip">Путь <b>от стройки</b> до <b>микроэлектроники</b></span>
           <span class="fchip"><b>20+ лет</b> в управлении</span>
-          <span class="fchip">Производство контроллеров <b>Пассер</b> и <b>Ларус</b></span>
-          <span class="fchip">Гранты <b>РФРИТ</b> и <b>Минпромторга</b></span>
-          <span class="fchip">Диагностика в структурах <b>Росатома</b> — 600+ каналов</span>
+          <span class="fchip">Собственная промышленная <b>микроэлектроника</b></span>
+          <span class="fchip">Гранты на <b>НИОКР</b></span>
+          <span class="fchip">Промышленная диагностика — <b>сотни каналов</b></span>
           <span class="fchip">Спикер по промышленному ИИ</span>
         </div>
       </div>
@@ -739,13 +742,19 @@
         <h2 style="margin-top:14px">Начните с AI-аудита процессов</h2>
         <p>Посмотрим ваши процессы и покажем, где ИИ даст эффект быстрее всего — с сохранением контроля за людьми. Без обязательств.</p>
       </div>
-      <form class="form" onsubmit="return false">
-        <label>Имя</label><input type="text" placeholder="Как к вам обращаться">
-        <label>Компания</label><input type="text" placeholder="Название компании">
-        <label>Контакт</label><input type="text" placeholder="Телефон или e-mail">
-        <label>Задача</label><textarea rows="3" placeholder="Какой процесс хотите ускорить"></textarea>
-        <button class="btn btn-amber">Запросить AI-аудит</button>
-        <p class="note">Прототип — форма демонстрационная.</p>
+      <!-- Формспри: замените ВАШ_ID на id формы из formspree.io (создать форму, привязать info@triagos.ru).
+           Пока ВАШ_ID не заменён — заявка уходит через почтовый клиент на info@triagos.ru (см. скрипт внизу).
+           ⚠ 152-ФЗ ст.18.5: Formspree хранит данные вне РФ — до публичного запуска решить (Formspree с согласием / РФ-сервис / mailto). -->
+      <form class="form" action="https://formspree.io/f/ВАШ_ID" method="POST">
+        <label>Имя</label><input type="text" name="name" placeholder="Как к вам обращаться" required>
+        <label>Компания</label><input type="text" name="company" placeholder="Название компании">
+        <label>Контакт</label><input type="text" name="contact" placeholder="Телефон или e-mail" required>
+        <label>Задача</label><textarea name="message" rows="3" placeholder="Какой процесс хотите ускорить"></textarea>
+        <input type="hidden" name="_subject" value="triagos.ru — заявка на AI-аудит">
+        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label class="consent"><input type="checkbox" name="consent" required> Даю согласие на обработку персональных данных согласно <a href="/privacy.html">политике</a>.</label>
+        <button class="btn btn-amber" type="submit">Запросить AI-аудит</button>
+        <p class="note">Ответим на указанный контакт в течение рабочего дня.</p>
       </form>
     </div>
   </div>
@@ -771,7 +780,7 @@
         <h4>Компания</h4>
         <a href="#founder">Об основателе</a>
         <a href="#cta">AI-аудит процессов</a>
-        <a href="#">Политика обработки данных</a>
+        <a href="/privacy.html">Политика обработки данных</a>
       </div>
       <div>
         <h4>Контакты</h4>
@@ -933,6 +942,24 @@
   links.addEventListener('click',function(e){ if(e.target.closest('a')) setOpen(false); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
   window.addEventListener('resize',function(){ if(window.innerWidth>1120) setOpen(false); });
+})();
+</script>
+
+<!-- форма: пока боевой обработчик не подключён — уходит на info@triagos.ru через почтовый клиент (РФ-ящик, без зарубежного хранилища) -->
+<script>
+(function(){
+  var form=document.querySelector('form.form');
+  if(!form) return;
+  form.addEventListener('submit', function(e){
+    var action=form.getAttribute('action')||'';
+    if(action.indexOf('ВАШ_ID')!==-1){           // боевой обработчик ещё не задан → фолбэк на почту
+      e.preventDefault();
+      var g=function(n){ var el=form.querySelector('[name="'+n+'"]'); return el?el.value.trim():''; };
+      var body='Имя: '+g('name')+'\nКомпания: '+g('company')+'\nКонтакт: '+g('contact')+'\nЗадача: '+g('message');
+      window.location.href='mailto:info@triagos.ru?subject='+encodeURIComponent('triagos.ru — заявка на AI-аудит')+'&body='+encodeURIComponent(body);
+    }
+    // иначе — обычный POST на боевой обработчик (Formspree и т.п.)
+  });
 })();
 </script>
 </body>
