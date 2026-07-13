@@ -752,19 +752,22 @@
       </div>
       <!-- FormSubmit подключён и активирован. В action — приватный алиас (не открытый e-mail): заявки идут на info@triagos.ru.
            ⚠ 152-ФЗ ст.18.5: FormSubmit хранит данные вне РФ (отражено в политике /privacy.html). -->
-      <form class="form" action="https://formsubmit.co/fd8cb1b85f3887aa166bef58c61d5a7e" method="POST">
+      <!-- Отправка — JS через ajax-endpoint FormSubmit (скрипт leadForm внизу): обычный POST с _captcha=false
+           стабильно отдаёт 500 на стороне FormSubmit (проверено 13.07.2026), ajax работает.
+           No-JS fallback: обычный POST без _captcha → промежуточная капча FormSubmit → редирект на _next. -->
+      <form class="form" id="leadForm" action="https://formsubmit.co/fd8cb1b85f3887aa166bef58c61d5a7e" method="POST">
         <label>Имя</label><input type="text" name="name" placeholder="Как к вам обращаться" required>
         <label>Компания</label><input type="text" name="company" placeholder="Название компании">
         <label>Контакт</label><input type="text" name="contact" placeholder="Телефон или e-mail" required>
         <label>Задача</label><textarea name="message" rows="3" placeholder="Какой процесс хотите ускорить"></textarea>
         <input type="hidden" name="_subject" value="triagos.ru — заявка на AI-аудит">
         <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_next" value="https://triagos.ru/spasibo.html">
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
         <label class="consent"><input type="checkbox" name="consent" required> Даю согласие на обработку персональных данных согласно <a href="/privacy.html">политике</a>.</label>
         <button class="btn btn-amber" type="submit">Запросить AI-аудит</button>
         <p class="note">Ответим на указанный контакт в течение рабочего дня.</p>
+        <p class="note form-err" style="display:none; color:var(--human-soft)">Не получилось отправить. Напишите нам напрямую: <a href="mailto:info@triagos.ru" style="text-decoration:underline">info@triagos.ru</a> или <a href="https://t.me/av_127" style="text-decoration:underline">Telegram @av_127</a>.</p>
       </form>
     </div>
   </div>
@@ -937,6 +940,35 @@
   window.addEventListener('load',equalize);
   if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(equalize); }
   var t; window.addEventListener('resize',function(){ clearTimeout(t); t=setTimeout(equalize,120); });
+})();
+</script>
+
+<!-- лид-форма: ajax-отправка в FormSubmit (обычный POST с _captcha=false у них отдаёт 500) -->
+<script>
+(function(){
+  var form=document.getElementById('leadForm');
+  if(!form||!window.fetch) return; // no-JS/старые браузеры → обычный POST (fallback через капчу FormSubmit)
+  var btn=form.querySelector('button[type="submit"]');
+  var err=form.querySelector('.form-err');
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(form._honey && form._honey.value) return; // honeypot
+    var data={};
+    ['name','company','contact','message','_subject','_template'].forEach(function(k){
+      if(form[k]) data[k]=form[k].value;
+    });
+    btn.disabled=true; var t0=btn.textContent; btn.textContent='Отправляем…'; if(err) err.style.display='none';
+    fetch('https://formsubmit.co/ajax/fd8cb1b85f3887aa166bef58c61d5a7e',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(data)
+    }).then(function(r){ return r.json(); }).then(function(j){
+      if(j && (j.success==='true'||j.success===true)){ window.location.href='/spasibo.html'; }
+      else{ throw new Error('fs'); }
+    }).catch(function(){
+      btn.disabled=false; btn.textContent=t0; if(err) err.style.display='block';
+    });
+  });
 })();
 </script>
 
