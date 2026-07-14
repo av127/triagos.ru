@@ -3,18 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>триагос — внедрение ИИ в бизнес-процессы</title>
-<meta name="description" content="триагос — внедряем ИИ в бизнес-процессы: рутину берут агенты, решения остаются за людьми.">
+<title>триагос — AI-агенты для бизнес-процессов</title>
+<meta name="description" content="триагос — внедряем AI-агентов в почту, CRM, документы и 1С за 1–2 месяца: рутину берут агенты, решения остаются за людьми.">
 <link rel="icon" type="image/svg+xml" href="triagos-favicon.svg">
-<!-- публичный запуск 13.07.2026; опционально позже: og:image -->
 <link rel="canonical" href="https://triagos.ru/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="триагос">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:url" content="https://triagos.ru/">
-<meta property="og:title" content="триагос — внедрение ИИ в бизнес-процессы">
-<meta property="og:description" content="Внедряем ИИ в бизнес-процессы: рутину берут агенты, решения остаются за людьми. Не чат-бот — операционный конвейер с гейтами.">
-<meta name="twitter:card" content="summary">
+<meta property="og:title" content="триагос — AI-агенты для бизнес-процессов">
+<meta property="og:description" content="Внедряем AI-агентов в почту, CRM, документы и 1С: операционный конвейер с человеческими гейтами, аудитом действий и on-prem там, где данные чувствительны.">
+<meta property="og:image" content="https://triagos.ru/og-image.svg">
+<meta property="og:image:type" content="image/svg+xml">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="триагос — AI-агенты для бизнес-процессов">
+<meta name="twitter:description" content="AI-аудит, пилот за 1–2 месяца и внедрение агентов с человеческими гейтами.">
+<meta name="twitter:image" content="https://triagos.ru/og-image.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -74,6 +80,8 @@
   .hero h1 .hu{color:var(--human)}
   .hero p.sub{font-size:19px; color:var(--muted-d); max-width:46ch; margin:24px 0 0}
   .hero .cta{display:flex; gap:13px; margin-top:32px; flex-wrap:wrap}
+  .hero-points{display:flex; flex-wrap:wrap; gap:9px; margin-top:22px; max-width:58ch}
+  .hero-points span{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--text-d); border:1px solid rgba(79,160,160,.24); background:rgba(79,160,160,.08); border-radius:999px; padding:7px 10px}
   .btn-amber{background:var(--human); color:#fff}
   .btn-amber:hover{background:#c97155}
   .btn-ghost{border-color:rgba(79,160,160,.4); color:#fff}
@@ -200,6 +208,10 @@
   .pbadge .ico{width:40px;height:40px;border-radius:10px;background:rgba(79,160,160,.14);color:var(--accent);display:grid;place-items:center;flex-shrink:0}
   .pbadge h4{font-size:16px; font-weight:600; margin-bottom:4px}
   .pbadge p{font-size:14px; color:var(--muted-d)}
+  .integrations{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+  .integration{background:#fff; border:1px solid rgba(21,32,40,.09); border-radius:14px; padding:20px}
+  .integration h3{font-size:16px; font-weight:600; color:var(--text-l); margin-bottom:6px}
+  .integration p{font-size:14px; color:var(--muted-l); line-height:1.45}
 
   /* steps — карточки-шаги (приём ServerPro «Шаг N»: иконка + метка + заголовок + буллеты) */
   .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:18px}
@@ -221,6 +233,9 @@
   .ccard .metric{font-family:"Space Grotesk"; font-weight:700; font-size:34px; color:var(--human)}
   .ccard h3{font-size:16px; font-weight:600; margin:6px 0 8px}
   .ccard p{font-size:14px; color:var(--muted-d)}
+  .ccard ul{list-style:none; margin:16px 0 0; padding:16px 0 0; border-top:1px solid rgba(79,160,160,.14); display:flex; flex-direction:column; gap:8px}
+  .ccard li{font-size:13px; color:var(--text-d); line-height:1.42}
+  .ccard li b{color:var(--human-soft); font-weight:500}
   .cases-disc{margin-top:20px; font-size:12.5px; color:var(--muted-d); font-family:"JetBrains Mono",monospace}
 
   /* founder */
@@ -242,8 +257,11 @@
   .ctagrid p{color:var(--muted-d); margin-top:14px}
   .form{background:var(--m2); border:1px solid rgba(79,160,160,.2); border-radius:16px; padding:28px}
   .form label{display:block; font-size:13px; color:var(--muted-d); margin-bottom:6px}
-  .form input,.form textarea{width:100%; background:var(--ink); border:1px solid rgba(79,160,160,.22); border-radius:9px; padding:12px 14px; color:#fff; font-family:inherit; font-size:15px; margin-bottom:15px}
-  .form input:focus,.form textarea:focus{outline:none; border-color:var(--accent)}
+  .cta-list{list-style:none; margin:20px 0 0; padding:0; display:flex; flex-direction:column; gap:9px}
+  .cta-list li{position:relative; padding-left:20px; color:var(--text-d); font-size:14.5px}
+  .cta-list li::before{content:""; position:absolute; left:2px; top:9px; width:7px; height:7px; border-radius:50%; background:var(--accent)}
+  .form input,.form textarea,.form select{width:100%; background:var(--ink); border:1px solid rgba(79,160,160,.22); border-radius:9px; padding:12px 14px; color:#fff; font-family:inherit; font-size:15px; margin-bottom:15px}
+  .form input:focus,.form textarea:focus,.form select:focus{outline:none; border-color:var(--accent)}
   .form .btn-amber{width:100%; justify-content:center}
   .form .note{font-size:12px; color:var(--muted-d); text-align:center; margin-top:10px}
   .form .consent{display:flex; gap:9px; align-items:flex-start; font-size:12.5px; color:var(--muted-d); line-height:1.4; margin:2px 0 14px; cursor:pointer}
@@ -265,7 +283,7 @@
     .hero .h-human{padding:52px 24px 60px}
     .privgrid,.ctagrid,.founder{grid-template-columns:1fr}
     .cards3,.agrid,.egrid,.hilgrid,.ccards,.f-top{grid-template-columns:1fr 1fr}
-    .steps{grid-template-columns:1fr 1fr}
+    .steps,.integrations{grid-template-columns:1fr 1fr}
   }
   @media(max-width:1120px){
     .nav-in{position:relative}
@@ -277,7 +295,7 @@
   }
   @media(max-width:600px){
     section{padding:62px 0}
-    .cards3,.agrid,.egrid,.hilgrid,.ccards,.steps,.f-top{grid-template-columns:1fr}
+    .cards3,.agrid,.egrid,.hilgrid,.ccards,.steps,.integrations,.f-top{grid-template-columns:1fr}
     .container{padding:0 18px}
     .nav-cta{font-size:13px; padding:8px 12px}
   }
@@ -308,6 +326,7 @@
       <a href="#employees">Цифровые сотрудники</a>
       <a href="#human">Человек в контуре</a>
       <a href="#privacy">Приватность</a>
+      <a href="#formats">Форматы</a>
       <a href="#founder">Об основателе</a>
     </nav>
     <div class="nav-right">
@@ -321,12 +340,17 @@
 <section class="hero">
   <div class="seam-v"></div>
   <div class="h-machine">
-    <span class="eyebrow">Внедрение ИИ в бизнес-процессы</span>
+    <span class="eyebrow">AI-агенты для бизнес-процессов</span>
     <h1><span class="ai">Скорость искусственного интеллекта.</span><br><span class="hu">Ответственность человека.</span></h1>
-    <p class="sub">Внедряем ИИ в ваши процессы так, что рутину берут агенты, а решения остаются за людьми.</p>
+    <p class="sub">Внедряем AI-агентов в почту, CRM, документы и 1С за 1–2 месяца: рутину берут агенты, решения остаются за людьми.</p>
+    <div class="hero-points">
+      <span>AI-аудит процессов</span>
+      <span>Пилот одного процесса</span>
+      <span>On-prem для чувствительных данных</span>
+    </div>
     <div class="cta">
       <a href="#cta" class="btn btn-amber">Провести AI-аудит процессов <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      <a href="#how" class="btn btn-ghost">Как это работает</a>
+      <a href="#formats" class="btn btn-ghost">Обсудить пилот</a>
     </div>
     <div class="diff"><b>// не чат-бот — операционный конвейер с гейтами</b></div>
   </div>
@@ -670,36 +694,54 @@
         <div class="pbadge"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><h4>Локальные модели</h4><p>Развёртывание LLM on-prem — данные остаются внутри периметра.</p></div></div>
         <div class="pbadge"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><h4>Контроль доступа и аудит</h4><p>Каждое действие агента фиксируется; кто, что и когда — прозрачно.</p></div></div>
         <div class="pbadge"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></div><div><h4>Гибрид по задаче</h4><p>Где можно — облако для качества; где чувствительно — только локально.</p></div></div>
+        <div class="pbadge"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/><circle cx="12" cy="12" r="9"/></svg></div><div><h4>Ограничение полномочий</h4><p>Агент не утверждает сам себя: деньги, договоры, отправка и первый контакт проходят через человека.</p></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PROCESS LADDER -->
+<!-- INTEGRATIONS -->
 <section class="lightsec">
   <div class="container">
     <div class="head">
-      <span class="eyebrow">Как мы работаем</span>
+      <span class="eyebrow">Интеграции</span>
+      <h2>Агенты работают рядом с вашими системами</h2>
+      <p>Начинаем с тех контуров, где уже живёт рутина: почта, CRM, документы, учётные системы и базы знаний. Новую платформу ради пилота внедрять не нужно.</p>
+    </div>
+    <div class="integrations">
+      <div class="integration"><h3>Почта и мессенджеры</h3><p>Входящие, классификация, черновики ответов, контроль сроков и задач.</p></div>
+      <div class="integration"><h3>CRM и продажи</h3><p>Квалификация лидов, обновление сделок, черновики КП и напоминания менеджерам.</p></div>
+      <div class="integration"><h3>1С и документы</h3><p>Счета, первичка, договоры, типовые письма и маршрутизация согласований.</p></div>
+      <div class="integration"><h3>База знаний</h3><p>Ответы по вашим регламентам, проектам, переписке и накопленному опыту.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS LADDER -->
+<section id="formats" class="lightsec">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow">Форматы работы</span>
       <h2>Начинаем с малого, масштабируем по результату</h2>
-      <p>На каждом шаге — конкретный результат, который остаётся у вас: карта, отчёт, работающий контур. Запускаем ИИ рядом с людьми, замеряем 1–2 месяца — и только потом масштабируем.</p>
+      <p>У каждого этапа есть измеримый результат: карта процессов, работающий пилот, внедрённый контур или сопровождение цифрового сотрудника.</p>
     </div>
     <div class="steps">
       <div class="step">
         <div class="top"><div class="sico"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div><div class="sk">Шаг 1</div></div>
         <h3>AI-аудит процессов</h3>
-        <p class="sbody">Смотрим ваши процессы и находим, где ИИ даст эффект быстрее всего.</p>
+        <p class="sbody">Быстро находим процессы, где AI-агент даст эффект без лишнего риска.</p>
         <ul class="slist"><li>Карта процессов и узких мест</li><li>Приоритеты по эффекту и риску</li><li>Дорожная карта внедрения</li></ul>
       </div>
       <div class="step">
         <div class="top"><div class="sico"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div><div class="sk">Шаг 2</div></div>
         <h3>Пилот / PoC</h3>
-        <p class="sbody">Один процесс, измеримый результат — запускаем ИИ рядом с людьми и замеряем.</p>
+        <p class="sbody">Запускаем один процесс рядом с людьми и честно замеряем эффект.</p>
         <ul class="slist"><li>Один процесс за 1–2 месяца</li><li>Замер скорости, качества, затрат</li><li>Отчёт «идём дальше или нет»</li></ul>
       </div>
       <div class="step">
         <div class="top"><div class="sico"><svg class="ic" viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M8 8h8v3a4 4 0 0 1-8 0z"/><path d="M12 15v7"/></svg></div><div class="sk">Шаг 3</div></div>
         <h3>Внедрение с гейтами</h3>
-        <p class="sbody">Встраиваем агента в процесс — с человеческими гейтами и аудитом действий.</p>
+        <p class="sbody">Встраиваем агента в реальные системы — с человеческими гейтами и аудитом действий.</p>
         <ul class="slist"><li>Интеграция в ваши системы (ERP, 1С, почта)</li><li>Гейты на ключевых точках</li><li>Каждое действие фиксируется</li></ul>
       </div>
       <div class="step">
@@ -716,13 +758,14 @@
 <section class="dark">
   <div class="container">
     <div class="head">
-      <span class="eyebrow">Эффект</span>
-      <h2>Что меняется на практике</h2>
+      <span class="eyebrow">Мини-кейсы</span>
+      <h2>Что можно запустить первым</h2>
+      <p>Ниже — типовые пилоты для первого запуска. Финальные цифры считаются на AI-аудите и проверяются на пилоте.</p>
     </div>
     <div class="ccards">
-      <div class="ccard"><div class="metric">24/7</div><h3>Обработка без пауз</h3><p>Входящие и заявки не ждут утра и рабочего дня.</p></div>
-      <div class="ccard"><div class="metric">−30…70%</div><h3>Рутинной нагрузки</h3><p>Ожидаемая разгрузка команды от повторяющихся операций.</p></div>
-      <div class="ccard"><div class="metric">×N</div><h3>Больше тем же составом</h3><p>Растёт объём работы без пропорционального роста штата.</p></div>
+      <div class="ccard"><div class="metric">Почта</div><h3>Сотни писем в день</h3><p>Агент разбирает входящие, выделяет сроки и готовит задачи с черновиками ответов.</p><ul><li><b>Было:</b> важное терялось между рассылками.</li><li><b>Гейт:</b> отправку и приоритеты утверждает человек.</li><li><b>Результат:</b> меньше пропущенных запросов, быстрее первый ответ.</li></ul></div>
+      <div class="ccard"><div class="metric">1С</div><h3>Счета и первичка</h3><p>Агент забирает счета из почты, распознаёт реквизиты и создаёт черновики документов.</p><ul><li><b>Было:</b> ручной ввод, ошибки и долгие согласования.</li><li><b>Гейт:</b> проведение и оплату подтверждает бухгалтер.</li><li><b>Результат:</b> меньше ручной работы и дублей.</li></ul></div>
+      <div class="ccard"><div class="metric">Встречи</div><h3>Протоколы и поручения</h3><p>Агент расшифровывает встречу, готовит протокол и выносит поручения в канбан.</p><ul><li><b>Было:</b> договорённости вспоминали на следующей встрече.</li><li><b>Гейт:</b> протокол утверждает ведущий.</li><li><b>Результат:</b> понятные задачи до следующего созвона.</li></ul></div>
     </div>
     <p class="cases-disc">// цифры — ориентир ожидаемого эффекта, зависят от процесса; уточняются на AI-аудите и пилоте.</p>
   </div>
@@ -761,6 +804,12 @@
         <span class="eyebrow" style="color:var(--accent)">Первый шаг</span>
         <h2 style="margin-top:14px">Начните с AI-аудита процессов</h2>
         <p>Посмотрим ваши процессы и покажем, где ИИ даст эффект быстрее всего — с сохранением контроля за людьми. Без обязательств.</p>
+        <ul class="cta-list">
+          <li>карта процессов и узких мест;</li>
+          <li>приоритетные сценарии для пилота;</li>
+          <li>оценка эффекта, рисков и требований к данным;</li>
+          <li>план запуска на 1–2 месяца.</li>
+        </ul>
       </div>
       <!-- FormSubmit подключён и активирован. В action — приватный алиас (не открытый e-mail): заявки идут на info@triagos.ru.
            ⚠ 152-ФЗ ст.18.5: FormSubmit хранит данные вне РФ (отражено в политике /privacy.html). -->
@@ -771,6 +820,14 @@
         <label>Имя</label><input type="text" name="name" placeholder="Как к вам обращаться" required>
         <label>Компания</label><input type="text" name="company" placeholder="Название компании">
         <label>Контакт</label><input type="text" name="contact" placeholder="Телефон или e-mail" required>
+        <label>Направление</label><select name="direction">
+          <option value="">Выберите, если уже понятно</option>
+          <option>Почта, заявки, CRM</option>
+          <option>Документы, договоры, 1С</option>
+          <option>Совещания, задачи, проекты</option>
+          <option>База знаний и on-prem ИИ</option>
+          <option>Нужно определить на аудите</option>
+        </select>
         <label>Задача</label><textarea name="message" rows="3" placeholder="Какой процесс хотите ускорить"></textarea>
         <input type="hidden" name="_subject" value="triagos.ru — заявка на AI-аудит">
         <input type="hidden" name="_template" value="table">
@@ -800,6 +857,7 @@
         <a href="#employees">Цифровые сотрудники</a>
         <a href="#human">Человек в контуре</a>
         <a href="#privacy">Приватность и on-prem</a>
+        <a href="#formats">Форматы работы</a>
       </div>
       <div>
         <h4>Компания</h4>
@@ -816,7 +874,7 @@
     </div>
     <div class="f-bot">
       <span>триагос · внедрение ИИ в бизнес-процессы</span>
-      <span>© 2026 · прототип · triagos.ru</span>
+      <span>© 2026 · triagos.ru</span>
     </div>
   </div>
 </footer>
